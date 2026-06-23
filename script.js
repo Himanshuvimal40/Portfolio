@@ -156,13 +156,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Simulate API call/Success state
+      // Send real email via Web3Forms API
       showStatus('Sending message...', 'info');
       
-      setTimeout(() => {
-        showStatus('Thank you! Your message has been sent successfully.', 'success');
-        contactForm.reset();
-      }, 1500);
+      const payload = {
+        access_key: "6dde8a65-e68e-46e1-b44c-a87e855107de",
+        name: name,
+        email: email,
+        subject: subject,
+        message: message,
+        from_name: "Himanshu Portfolio Contact"
+      };
+
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(async (response) => {
+        let json = await response.json();
+        if (response.status == 200) {
+          showStatus('Thank you! Your message has been sent successfully.', 'success');
+          contactForm.reset();
+        } else {
+          showStatus(json.message || 'Something went wrong. Please try again.', 'error');
+        }
+      })
+      .catch((error) => {
+        showStatus('Network error. Please check your connection and try again.', 'error');
+      });
     });
   }
 
